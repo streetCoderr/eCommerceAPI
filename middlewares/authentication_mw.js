@@ -7,8 +7,8 @@ const authenticator = (req, res, next) => {
   if (!token) 
     throw new UnauthenticatedError("Authentication failed. Token not found")
   try {
-    const user = decodeTOken(token)
-    req.user = user
+    const {userId, name, role} = decodeTOken(token)
+    req.user = {userId, name, role}
     next()
   } catch (err) {
     throw new UnauthenticatedError("Authentication failed. Invalid token")
