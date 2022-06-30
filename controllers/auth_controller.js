@@ -1,6 +1,7 @@
 const User = require('../models/user');
-const { BadRequestError } = require('../errors')
+const { BadRequestError, UnauthenticatedError } = require('../errors')
 const { generateTokenUser, addCookieToResponse } = require('../utils')
+const { StatusCodes } = require('http-status-codes')
 
 const register = async (req, res) => {
   const { email, name, password } = req.body;
@@ -13,15 +14,30 @@ const register = async (req, res) => {
   const user = await User.create({name, email, password, role});
   const tokenizedUser = generateTokenUser(user);
   addCookieToResponse({res, user: tokenizedUser})
-  res.status(200).json({user: tokenizedUser})
+  res.status(StatusCodes.CREATED).json({user: tokenizedUser})
 }
 
 const login = async (req, res) => {
-  res.send('login user')
+  const { email, password } = req.body;
+  if (!email || !password) {
+    throw new BadRequestError("Please provide email and password")
+  }
+  const user = await User.findOne({email})
+  if (!user)
+    throw new UnauthenticatedError("Authentication failed. Please put in the right values.")
+  if (!(await user.compare(password)))
+    throw new UnauthenticatedError("Authentication failed. Please put in the right values.")
+  const tokenizedUser = generateTokenUser(user);
+  addCookieToResponse({res, user: tokenizedUser})
+  res.status(StatusCodes.OK).json({user: tokenizedUser})
 }
 
 const logout = async (req, res) => {
-  res.send('logout user')
+  res.cookie('token', 'logout', {
+    httpOnly: true,
+    expires: new Date(Date.now()),
+  })
+  res.status(StatusCodes.OK).send("successful logged out")
 }
 
 module.exports = {
