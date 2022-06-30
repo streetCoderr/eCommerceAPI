@@ -6,9 +6,9 @@ const generateJWT = (payload) => {
     expiresIn: process.env.JWT_LIFE_TIME
   })
 }
-// const decodeTOken = (token) => {
-//   return jwt.verify(token, process.env.JWT_SECRET_KEY)
-// }
+const decodeTOken = (token) => {
+  return jwt.verify(token, process.env.JWT_SECRET_KEY)
+}
 const addCookieToResponse = ({res, user}) => {
   const token = generateJWT(user);
   const oneDay = 1000 * 60 * 60 * 24;
@@ -21,5 +21,5 @@ const addCookieToResponse = ({res, user}) => {
 }
 
 module.exports = {
-  generateJWT, addCookieToResponse
+  generateJWT, addCookieToResponse, decodeTOken
 }

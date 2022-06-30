@@ -10,7 +10,7 @@ const { authRouter, usersRouter } = require('./routes');
 
 const connectDB = require('./db/connect');
 
-const { notFoundMW, errorHandlerMW } = require('./middlewares')
+const { notFound, errorHandler, authenticator } = require('./middlewares')
 
 const PORT = process.env.PORT || 3000
 
@@ -23,10 +23,10 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/v1/auth', authRouter);
-app.use('/api/v1/users', usersRouter);
+app.use('/api/v1/users', authenticator, usersRouter);
 
-app.use(notFoundMW);
-app.use(errorHandlerMW);
+app.use(notFound);
+app.use(errorHandler);
 
 const start = async () => {
   try {

@@ -1,5 +1,5 @@
 
-const errorHandlerMW = (err, req, res, next) => {
+const errorHandler = (err, req, res, next) => {
   const customError = {
     message: err.message || `Something went wrong. Please try again later`,
     statusCode: err.statusCode || 500
@@ -22,7 +22,7 @@ const errorHandlerMW = (err, req, res, next) => {
     customError.statusCode = 404
   }
 
-  return res.status(customError.statusCode).json({ msg: customError.msg })
+  return res.status(customError.statusCode).json({ msg: customError.message })
 }
 
-module.exports = errorHandlerMW
+module.exports = errorHandler

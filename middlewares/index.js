@@ -1,7 +1,11 @@
-const notFoundMW = require('./not_found_mw');
-const errorHandlerMW = require('./error_handler_mw')
+const notFound = require('./not_found_mw');
+const errorHandler = require('./error_handler_mw')
+const authenticator = require('./authentication_mw')
+const authorizer = require('./authorization_mw')
 
 module.exports = {
-  notFoundMW,
-  errorHandlerMW
+  notFound,
+  errorHandler,
+  authenticator,
+  authorizer
 }
