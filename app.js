@@ -6,7 +6,7 @@ const app = express();
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser')
 
-const { authRouter } = require('./routes');
+const { authRouter, usersRouter } = require('./routes');
 
 const connectDB = require('./db/connect');
 
@@ -23,6 +23,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/users', usersRouter);
 
 app.use(notFoundMW);
 app.use(errorHandlerMW);
