@@ -24,9 +24,9 @@ const login = async (req, res) => {
   }
   const user = await User.findOne({email})
   if (!user)
-    throw new UnauthenticatedError("Authentication failed. Please put in the right values.")
+    throw new UnauthenticatedError("Authentication failed. Invalid credentials.")
   if (!(await user.compare(password)))
-    throw new UnauthenticatedError("Authentication failed. Please put in the right values.")
+    throw new UnauthenticatedError("Authentication failed. Invalid credentials.")
   const tokenizedUser = generateTokenUser(user);
   addCookieToResponse({res, user: tokenizedUser})
   res.status(StatusCodes.OK).json({user: tokenizedUser})

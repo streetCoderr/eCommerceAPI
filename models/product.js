@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const ProductSchema = new mongoose.Schema({
   name: {
     type: String,
+    trim: true,
     minlength: 3,
     maxlength: 50,
     required: [true, "please provide product's name"]
@@ -16,19 +17,34 @@ const ProductSchema = new mongoose.Schema({
     type: String,
     required: [true, "please provide product's description"]
   },
+  image: {
+    type: String,
+    required: true,
+    default: '/uploads/example.jpeg'
+  },
   brand: {
     type: String,
     required: [true, "please provide product's brand"],
   },
   category: {
     type: String,
-    required: [true, "provide category of product"],
+    required: [true, "please provide the category of this product"],
     enum: {
       values: ["super market", "health & beauty", "home & office", 
     "phones & tablets", "computing", "electronics", "fashion", 
     "baby products", "gaming", "sporting goods", "automobile", "others"],
       message: "{VALUE} not a valid category"
     },
+  },
+  featured: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  colors: {
+    type: [String],
+    default: ["#000000"],
+    required: true
   },
   shippingFee: {
     type: Number,
@@ -41,16 +57,11 @@ const ProductSchema = new mongoose.Schema({
       return this.shippingFee === 0;
     },
   },
-  colors: {
-    type: [String],
-    default: ["#000000"],
-    required: true
-  },
   averageRating: {
     type: Number,
     default: 0
   },
-  numberOfReviews: {
+  numOfReviews: {
     type: Number,
     default: 0
   },
