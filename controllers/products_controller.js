@@ -1,6 +1,6 @@
 const Product = require("../models/product");
 const {StatusCodes} = require("http-status-codes")
-const {NotFoundError} = require("../errors")
+const {NotFoundError} = require("../errors");
 
 const getAllProducts = async (req, res) => {
   const products = await Product.find({})
@@ -21,8 +21,15 @@ const getSingleProduct = async (req, res) => {
   res.status(StatusCodes.OK).json({product})
 }
 
-const updateProduct = (req, res) => {
-  res.send("update product")
+const updateProduct = async (req, res) => {
+  const {id} = req.params;
+  if (req.body.shippingFee) {
+    req.body.freeDelivery = req.body.shippingFee === 0
+  }
+  const product = await Product.findOneAndUpdate({_id: id}, req.body, {new: true, runValidators: true});
+  if (!product)
+    throw new NotFoundError(`This id: ${id}, has no product associated with it`)
+  res.status(StatusCodes.OK).json({product})
 }
 
 const deleteProduct = (req, res) => {
