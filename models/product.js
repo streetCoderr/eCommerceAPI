@@ -4,7 +4,6 @@ const ProductSchema = new mongoose.Schema({
   name: {
     type: String,
     trim: true,
-    minlength: 3,
     maxlength: 50,
     required: [true, "please provide product's name"]
   },
@@ -15,6 +14,7 @@ const ProductSchema = new mongoose.Schema({
   },
   description: {
     type: String,
+    minlength: 5,
     required: [true, "please provide product's description"]
   },
   image: {
@@ -33,7 +33,7 @@ const ProductSchema = new mongoose.Schema({
       values: ["super market", "health & beauty", "home & office", 
     "phones & tablets", "computing", "electronics", "fashion", 
     "baby products", "gaming", "sporting goods", "automobile", "others"],
-      message: "{VALUE} not a valid category"
+      message: "{VALUE} is not a valid category"
     },
   },
   featured: {
