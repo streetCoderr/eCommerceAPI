@@ -8,6 +8,7 @@ const app = express();
 // relevant middlewares
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser')
+const fileUpload = require("express-fileupload")
 
 // routers
 const { authRouter, usersRouter, productsRouter } = require('./routes');
@@ -23,6 +24,8 @@ const PORT = process.env.PORT || 3000
 app.use(express.json())
 app.use(morgan('tiny'))
 app.use(cookieParser(process.env.JWT_SECRET_KEY))
+app.use(express.static('./public'))
+app.use(fileUpload())
 
 app.get('/', (req, res) => {
   res.status(200).send("<h3>Let's build an E-Commerce API. Shall we???</h3>");
