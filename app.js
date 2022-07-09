@@ -11,7 +11,7 @@ const cookieParser = require('cookie-parser')
 const fileUpload = require("express-fileupload")
 
 // routers
-const { authRouter, usersRouter, productsRouter } = require('./routes');
+const { authRouter, usersRouter, productsRouter, reviewsRouter } = require('./routes');
 
 // db
 const connectDB = require('./db/connect');
@@ -34,6 +34,8 @@ app.get('/', (req, res) => {
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', authenticator, usersRouter);
 app.use('/api/v1/products', authenticator, productsRouter);
+app.use('/api/v1/reviews', reviewsRouter);
+
 
 
 app.use(notFound);
