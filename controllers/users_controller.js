@@ -1,7 +1,7 @@
 const {StatusCodes} = require('http-status-codes')
-const { UnauthorizedError, BadRequestError, NotFoundError } = require('../errors')
+const { BadRequestError, NotFoundError } = require('../errors')
 const User = require('../models/user')
-const { generateTokenUser, addCookieToResponse } = require('../utils')
+const { generateTokenUser, addCookieToResponse, checkPermission } = require('../utils')
 
 const getAllUsers = async (req, res) => {
   const users = await User.find({}).select('-password')
@@ -10,8 +10,7 @@ const getAllUsers = async (req, res) => {
 
 const getUser = async (req, res) => {
   const {id} = req.params
-  if (id != req.user.userId && req.user.role != 'admin') 
-    throw new UnauthorizedError("You dont have permission to view this route")
+  checkPermission(id, req.user);
   const user = await User.findById(id).select('-password');
   if (!user)
     throw new NotFoundError(`This id: ${id}, has no user associated with it`)
