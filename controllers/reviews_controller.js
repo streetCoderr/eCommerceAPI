@@ -69,4 +69,17 @@ const deleteReview = async (req, res) => {
   res.status(StatusCodes.OK).json({msg: "Deleted succesfully"})
 }
 
-module.exports = {createReview, getAllReviews, getSingleReview, updateReview, deleteReview}
+const getSingleProductReview = async (req, res) => {
+  const {id:productId} = req.params
+  const reviews = await Review.find({product: productId});
+  res.status(StatusCodes.OK).json({reviews, reviewsLength: reviews.length})
+}
+
+module.exports = {
+  createReview, 
+  getAllReviews, 
+  getSingleReview, 
+  updateReview, 
+  deleteReview, 
+  getSingleProductReview
+}
