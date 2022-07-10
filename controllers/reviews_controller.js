@@ -1,11 +1,30 @@
-
+const Review = require("../models/review")
+const Product = require("../models/product")
+const { BadRequestError, NotFoundError} = require("../errors")
+const { StatusCodes } = require("http-status-codes")
 
 const getAllReviews = (req, res) => {
-  res.send("get all reviews")
+  
 }
 
-const createReview = (req, res) => {
-  res.send("create review")
+const createReview = async (req, res) => {
+  if(!req.body.product)
+    throw new BadRequestError("please provide product");
+
+  const productExists = await Product.findOne({_id: req.body.product})
+  if (!productExists)
+    throw new NotFoundError(`There is no product with id: ${req.body.product}`);
+
+  const alreadyReviewed = await Review.findOne({
+    product: req.body.product, user: req.user.userId
+  })
+
+  if (alreadyReviewed) 
+    throw new BadRequestError("You have already reviewed this product");
+  req.body.user = req.user.userId
+
+  const review = await Review.create(req.body)
+  res.status(StatusCodes.CREATED).json({review})
 }
 
 const getSingleReview = (req, res) => {
