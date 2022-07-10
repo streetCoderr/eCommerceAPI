@@ -35,9 +35,10 @@ const updateProduct = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
   const {id} = req.params
-  const product = await Product.findByIdAndRemove(id);
+  const product = await Product.findById(id);
   if (!product)
     throw new NotFoundError(`This id: ${id}, has no product associated with it`)
+  await product.remove()
   res.status(StatusCodes.OK).json({msg: "deleted successfully"})
 }
 
