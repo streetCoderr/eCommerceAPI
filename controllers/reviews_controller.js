@@ -3,8 +3,11 @@ const Product = require("../models/product")
 const { BadRequestError, NotFoundError} = require("../errors")
 const { StatusCodes } = require("http-status-codes")
 
-const getAllReviews = (req, res) => {
-  
+const getAllReviews = async (req, res) => {
+  const reviews = await Review.find({}).populate({
+    path: 'product',
+    select: 'name brand price'})
+  res.status(StatusCodes.OK).json({reviews, reviewsLength: reviews.length})
 }
 
 const createReview = async (req, res) => {
@@ -27,8 +30,18 @@ const createReview = async (req, res) => {
   res.status(StatusCodes.CREATED).json({review})
 }
 
-const getSingleReview = (req, res) => {
-  res.send("get single review")
+const getSingleReview = async (req, res) => {
+  const {id: reviewId} = req.params
+  const review = await Review.findOne({_id: reviewId}).populate({
+    path:'product',
+    select:'brand name price'
+  }).populate({
+    path: 'user',
+    select: 'name email'
+  })
+  if (!review)
+    throw new NotFoundError(`There is no review matching the id: ${reviewId}`)
+  res.status(StatusCodes.OK).json({review})
 }
 
 const updateReview = (req, res) => {
