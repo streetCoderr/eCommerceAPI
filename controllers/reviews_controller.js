@@ -59,8 +59,14 @@ const updateReview = async (req, res) => {
   res.status(StatusCodes.OK).json({review})
 }
 
-const deleteReview = (req, res) => {
-  res.send("delete review")
+const deleteReview = async (req, res) => {
+  const {id: reviewId} = req.params
+  const review  = await Review.findById(reviewId)
+  if (!review)
+    throw new NotFoundError(`No review associated with id: ${reviewId}`)
+  checkPermission(review.user, req.user)
+  await review.remove()
+  res.status(StatusCodes.OK).json({msg: "Deleted succesfully"})
 }
 
 module.exports = {createReview, getAllReviews, getSingleReview, updateReview, deleteReview}
