@@ -2,6 +2,7 @@ const Review = require("../models/review")
 const Product = require("../models/product")
 const { BadRequestError, NotFoundError} = require("../errors")
 const { StatusCodes } = require("http-status-codes")
+const { checkPermission } = require("../utils")
 
 const getAllReviews = async (req, res) => {
   const reviews = await Review.find({}).populate({
@@ -44,8 +45,18 @@ const getSingleReview = async (req, res) => {
   res.status(StatusCodes.OK).json({review})
 }
 
-const updateReview = (req, res) => {
-  res.send("update review")
+const updateReview = async (req, res) => {
+  const {id: reviewId} = req.params
+  const review  = await Review.findById(reviewId)
+  if (!review)
+    throw new NotFoundError(`No review associated with id: ${reviewId}`)
+  checkPermission(review.user, req.user)
+  const {rating, title, comment} = req.body
+  review.rating = rating
+  review.title = title
+  review.comment = comment
+  await review.save()
+  res.status(StatusCodes.OK).json({review})
 }
 
 const deleteReview = (req, res) => {
