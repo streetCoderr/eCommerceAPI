@@ -2,6 +2,7 @@ const Order = require("../models/order");
 const Product = require("../models/product");
 const { StatusCodes } = require("http-status-codes");
 const { NotFoundError, BadRequestError } = require("../errors");
+const { checkPermission } = require("../utils")
 
 const mockStripeAPI = async ({ amount, currency }) => {
   const client_secret = "comrade, you dey see wetin I dey see?";
@@ -9,7 +10,8 @@ const mockStripeAPI = async ({ amount, currency }) => {
 };
 
 const getAllOrders = async (req, res) => {
-  res.send("getAllOrders");
+  const orders = await Order.find({})
+  res.status(StatusCodes.OK).json({orders, count: orders.length})
 };
 
 const createOrder = async (req, res) => {
@@ -55,11 +57,16 @@ const createOrder = async (req, res) => {
 };
 
 const getCurrentUserOrders = async (req, res) => {
-  res.send("getCurrentUserOrders");
+  const orders = await Order.find({user: req.user.userId})
+  res.status(StatusCodes.OK).json({orders})
 };
 
 const getOrder = async (req, res) => {
-  res.send("getOrder");
+  const order = await Order.findById(req.params.id)
+  if (!order)
+    throw new NotFoundError(`No order associated with id: ${req.params.id}`)
+  checkPermission(order.user, req.user)
+  res.status(StatusCodes.OK).json({order})
 };
 
 const updateOrder = async (req, res) => {
