@@ -70,7 +70,18 @@ const getOrder = async (req, res) => {
 };
 
 const updateOrder = async (req, res) => {
-  res.send("updateOrder");
+  const {id: orderId} = req.params
+  const { paymentIntentId } = req.body
+  if (!paymentIntentId)
+    throw new BadRequestError("payment intent id not provided")
+  const order = await Order.findById(orderId)
+  if (!order)
+    throw new NotFoundError(`No order associated with id: ${req.params.id}`)
+  order.paymentIntentId = paymentIntentId
+  order.status = 'paid'
+  await order.save()
+
+  res.status(StatusCodes.OK).json({order})
 };
 
 module.exports = {
