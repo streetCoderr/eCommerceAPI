@@ -24,9 +24,6 @@ const getSingleProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   const {id} = req.params;
-  if (req.body.shippingFee) {
-    req.body.freeDelivery = req.body.shippingFee === 0
-  }
   const product = await Product.findOneAndUpdate({_id: id}, req.body, {new: true, runValidators: true});
   if (!product)
     throw new NotFoundError(`This id: ${id}, has no product associated with it`)

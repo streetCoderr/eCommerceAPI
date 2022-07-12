@@ -46,16 +46,10 @@ const ProductSchema = new mongoose.Schema({
     default: ["#000000"],
     required: true
   },
-  shippingFee: {
-    type: Number,
-    required: [true, "please providing shipping fee of product"],
-    default: 0
-  },
   freeDelivery: {
     type: Boolean,
-    default: function() {
-      return this.shippingFee === 0;
-    },
+    default: true,
+    required: true
   },
   averageRating: {
     type: Number,
