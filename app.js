@@ -10,6 +10,13 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser')
 const fileUpload = require("express-fileupload")
 
+// security packages
+const cors = require("cors")
+const xss = require("xss-clean")
+const helmet = require("helmet")
+const rateLimiter = require("express-rate-limiter")
+const sanitizeMongo = require("express-mongo-sanitize")
+
 // routers
 const { authRouter, usersRouter, productsRouter, reviewsRouter, ordersRouter } = require('./routes');
 
@@ -20,6 +27,18 @@ const connectDB = require('./db/connect');
 const { notFound, errorHandler, authenticator } = require('./middlewares')
 
 const PORT = process.env.PORT || 3000
+
+app.set('trust proxy', 1);
+app.use(
+  rateLimiter({
+    windowMs: 15 * 60 * 1000,
+    max: 60,
+  })
+);
+app.use(helmet());
+app.use(cors());
+app.use(xss());
+app.use(sanitizeMongo());
 
 app.use(express.json())
 app.use(morgan('tiny'))
