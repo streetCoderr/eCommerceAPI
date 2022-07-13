@@ -14,7 +14,7 @@ const fileUpload = require("express-fileupload")
 const cors = require("cors")
 const xss = require("xss-clean")
 const helmet = require("helmet")
-const rateLimiter = require("express-rate-limiter")
+const rateLimiter = require("express-rate-limit")
 const sanitizeMongo = require("express-mongo-sanitize")
 
 // routers
