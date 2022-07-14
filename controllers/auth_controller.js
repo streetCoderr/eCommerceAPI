@@ -12,8 +12,8 @@ const register = async (req, res) => {
   }
   const role =  (await User.countDocuments({}) === 0) ?
   'admin' : 'user';
-  const user = await User.create({name, email, password, role});
   const verificationToken = crypto.randomBytes(50).toString('hex')
+  const user = await User.create({name, email, password, role, verificationToken});
   // temporary origin
   const origin = "http://localhost:3000";
   sendVerificationMail({
@@ -25,6 +25,22 @@ const register = async (req, res) => {
   // const tokenizedUser = generateTokenUser(user);
   // addCookieToResponse({res, user: tokenizedUser})
   res.status(StatusCodes.CREATED).json({msg: "Your account was created successfully. Check your email to verify your account"})
+}
+
+const verifyEmail = async (req, res) => {
+  const {token, email} = req.query
+  if (!token || !email)
+    throw new BadRequestError("Provide verification token and email")
+  const user = await User.findOne({email})
+  if (!user)
+    throw new UnauthenticatedError("Verification failed")
+  if (user.verificationToken !== token)
+    throw new UnauthenticatedError("Verification failed")
+  user.verificationToken = '';
+  user.isVerified = true;
+  user.verificationDate = new Date();
+  await user.save();
+  res.status(StatusCodes.OK).json({msg: "Verification successful!"})
 }
 
 const login = async (req, res) => {
@@ -53,5 +69,6 @@ const logout = async (req, res) => {
 module.exports = {
   register,
   login,
-  logout
+  logout,
+  verifyEmail,
 }

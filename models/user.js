@@ -31,7 +31,7 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  verified: Date,
+  verificationDate: Date,
 })
 
 UserSchema.pre("save", async function() {

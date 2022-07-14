@@ -1,8 +1,8 @@
 module.exports = {
-  host: 'smtp.ethereal.email',
-  port: 587,
+  host: "smtp.mailtrap.io",
+  port: 2525,
   auth: {
-      user: 'faustino.kub67@ethereal.email',
-      pass: '9WNK5KNXzDaj43HW2e'
+    user: "434a9e10e3ecdb",
+    pass: "4d2686eed400c5"
   }
 }
