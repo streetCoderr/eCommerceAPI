@@ -26,6 +26,12 @@ const UserSchema = new mongoose.Schema({
     required: [true, 'please provide password'],
     minlength: 6,
   },
+  verificationToken: String,
+  isVerified: {
+    type: Boolean,
+    default: false
+  },
+  verified: Date,
 })
 
 UserSchema.pre("save", async function() {
