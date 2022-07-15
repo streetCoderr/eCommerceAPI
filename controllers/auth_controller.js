@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const Token = require('../models/token');
 const { BadRequestError, UnauthenticatedError } = require('../errors')
 const { generateTokenUser, addCookieToResponse, sendVerificationMail } = require('../utils')
 const { StatusCodes } = require('http-status-codes')
@@ -53,8 +54,24 @@ const login = async (req, res) => {
     throw new UnauthenticatedError("Authentication failed. Invalid credentials.")
   if (!(await user.compare(password)))
     throw new UnauthenticatedError("Authentication failed. Invalid credentials.")
+  if (!user.isVerified)
+    throw new UnauthenticatedError("Please verify your mail.")
+  
   const tokenizedUser = generateTokenUser(user);
-  addCookieToResponse({res, user: tokenizedUser})
+  let refreshToken;
+  const existingToken = await Token.findOne({user: user._id})
+  if (existingToken) {
+    if (!existingToken.isValid)
+      throw new UnauthenticatedError("Invalid credentials.")
+    refreshToken = existingToken.refreshToken
+    addCookieToResponse({res, user: tokenizedUser, refreshToken})
+    res.status(StatusCodes.OK).json({user: tokenizedUser})
+    return;
+  }
+
+  refreshToken = crypto.randomBytes(40).toString('hex')
+  await Token.create({refreshToken, user: user._id, isValid: true})
+  addCookieToResponse({res, user: tokenizedUser, refreshToken})
   res.status(StatusCodes.OK).json({user: tokenizedUser})
 }
 
